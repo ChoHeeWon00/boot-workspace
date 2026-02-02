@@ -34,6 +34,12 @@ public class MemberService {
                 //.orElseThrow( () -> new MemberNotFoundException() );
                 .orElseThrow( MemberNotFoundException::new );
     }
+    public void modify(int id , MemberDto memberDto ){
+        boolean bool = memberRepository.existById( id );
+        if( !bool ) //bool ==false
+            throw new MemberNotFoundException("수정 사용자 없");
+        memberRepository.save( id, memberDto );
+    }
 }
 
 

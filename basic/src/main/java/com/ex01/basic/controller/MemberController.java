@@ -5,10 +5,7 @@ import com.ex01.basic.exception.MemberNotFoundException;
 import com.ex01.basic.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -46,7 +43,7 @@ public class MemberController {
     }
 
     @GetMapping("/{id}") // /members/{id}
-    public ResponseEntity getOne(@PathVariable("id") int id){
+    public ResponseEntity<MemberDto> getOne(@PathVariable("id") int id){
         MemberDto memberDto = null;
         //System.out.println("연결 확인 : "+id);
         try{
@@ -56,6 +53,17 @@ public class MemberController {
         }
         //sel * fom member whe id={id}
         return ResponseEntity.ok(memberDto);
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> update( @ModelAttribute MemberDto memberDto,
+                                        @PathVariable("id") int id ){
+        try {
+            memberService.modify( id , memberDto );
+        } catch (MemberNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        //return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.ok().build();
     }
 }
 

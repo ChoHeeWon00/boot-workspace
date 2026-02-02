@@ -31,4 +31,12 @@ public class MemberRepository {
         return DB.stream().filter(mem -> mem.getId() == id )
                 .findFirst();
     }
+    public boolean existById(int id){
+        return DB.stream().filter(mem -> mem.getId() == id)
+                .findFirst()
+                .isPresent();
+    }
+    public void save(int id,MemberDto memberDto ){
+        DB.set(id-1 , memberDto); //index, 변경할 값
+    }
 }
