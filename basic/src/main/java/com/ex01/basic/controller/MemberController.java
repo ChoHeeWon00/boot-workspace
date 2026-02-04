@@ -202,6 +202,13 @@ public class MemberController {
                     ))
     })
     public ResponseEntity<String> register(@ParameterObject @ModelAttribute MemberDto memberDto){
+        /*
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        */
         try {
             memberService.insert( memberDto );
         } catch (MemberDuplicateException e) {

@@ -55,7 +55,7 @@ public class MemberService {
             throw new MemberNotFoundException("삭제 사용자 없음");
     }
     public void insert(MemberDto memberDto ){
-        boolean bool = memberRepository.deleteById( memberDto.getId() );
+        boolean bool = memberRepository.existById( memberDto.getId() );
         if( bool )
             throw new MemberDuplicateException("중복 id");
         memberRepository.save( memberDto );
