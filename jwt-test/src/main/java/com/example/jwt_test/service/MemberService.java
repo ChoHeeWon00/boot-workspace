@@ -3,6 +3,7 @@ package com.example.jwt_test.service;
 import com.example.jwt_test.dto.MemberDto;
 import com.example.jwt_test.dto.MemberRegDto;
 import com.example.jwt_test.entity.MemberEntity;
+import com.example.jwt_test.exception.MemberAccessDeniedException;
 import com.example.jwt_test.exception.MemberConflictException;
 import com.example.jwt_test.exception.MemberNotFoundException;
 import com.example.jwt_test.repository.MemberRepository;
@@ -42,10 +43,14 @@ public class MemberService {
         memberRepository.save(memberEntity);
     }
 
-    public void delete(Long id) { // 1개 사용 위치 신규 *
-        if (!memberRepository.existsById(id))
-            throw new MemberNotFoundException("삭제할 사용자가 없습니다!!");
-
+    public void delete(Long id, String username) { // 1개 사용 위치 신규 *
+//        if (!memberRepository.existsById(id))
+//            throw new MemberNotFoundException("삭제할 사용자가 없습니다!!");
+        MemberEntity memberEntity = memberRepository.findById(id)
+                        .orElseThrow( () -> new MemberNotFoundException("삭제 사용자 없음"));
+        if (!memberEntity.getUsername().equals(username)) {
+            throw  new MemberAccessDeniedException("삭제 권한이 없습니다.");
+        }
         memberRepository.deleteById(id);
     }
 }

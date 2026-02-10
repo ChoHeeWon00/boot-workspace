@@ -27,4 +27,15 @@ public class GlobalMemberException {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
     }
+
+    @ExceptionHandler(MemberAccessDeniedException.class)
+    public ResponseEntity<ProblemDetail> handlerAccessDeniedException(
+            MemberAccessDeniedException memberAccessDeniedException){
+
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
+        problemDetail.setDetail( memberAccessDeniedException.getMessage() );
+
+        //FORBIDDEN 금지됨이라는 뜻. 형용사
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(problemDetail);
+    }
 }

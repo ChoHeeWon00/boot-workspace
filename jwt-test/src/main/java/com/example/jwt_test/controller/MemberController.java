@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,8 +31,12 @@ public class MemberController {
 
     @DeleteMapping("/{id}")
     @SecurityRequirement(name="JWT")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-        memberService.delete(id);
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id,
+                                       Authentication authentication) {
+        System.out.println("삭제 이름 :" + authentication.getName());
+        System.out.println("삭제 인증 정보 :" + authentication.getPrincipal());
+
+        memberService.delete(id, authentication.getName());
         return ResponseEntity.ok().build();
     }
 }
