@@ -13,7 +13,7 @@ import java.util.Date;
 public class JwtUtil {
     @Value("${jwt.secretKey}")
     private String secretKey;
-//    private String secretKey = "test1234"; // 서명(Signature)을 만들 때 사용하는 '비밀 열쇠'입니다.
+    //    private String secretKey = "test1234"; // 서명(Signature)을 만들 때 사용하는 '비밀 열쇠'입니다.
     private final long expirationMs = 1000 * 60; // 토큰의 유통기한입니다.
 
     public String generateToken(String username) { // 0개의 사용위치 신규 *
@@ -36,5 +36,27 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            // 토큰을 파싱하며 서명(Signature)과 유효성(만료시간)을 검사합니다.
+            Jwts.parser().setSigningKey(secretKey)
+                    .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            // 서명이 일치하지 않거나 만료된 경우, 혹은 형식이 잘못된 경우 false 반환
+            return false;
+        }
+    }
+    private Claims getClaims(String token) {
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+    }
+
+    public String getUsernameFormToken(String token) {
+        Claims claims = getClaims(token);
+        System.out.println("username : " + claims.get("username", String.class));
+        System.out.println("name : " + claims.get("name", String.class));
+        return claims.get("username", String.class);
     }
 }
