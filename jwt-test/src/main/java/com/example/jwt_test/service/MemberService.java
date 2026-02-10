@@ -8,6 +8,7 @@ import com.example.jwt_test.exception.MemberNotFoundException;
 import com.example.jwt_test.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,23 +18,25 @@ import java.util.List;
 @Transactional
 @Service
 public class MemberService {
+    private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
-    public List<MemberDto> getList(){
+    public List<MemberDto> getList() {
         List<MemberDto> list = memberRepository.findAll()
                 .stream().map(MemberDto::new).toList();
 
-        if(list.isEmpty())
+        if (list.isEmpty())
             throw new MemberNotFoundException("저장된 데이터 없음");
 
         return list;
     }
 
-    public void register(MemberRegDto memberRegDto){
-        if(memberRepository.existsByUsername(memberRegDto.getUsername()))
+    public void register(MemberRegDto memberRegDto) {
+        if (memberRepository.existsByUsername(memberRegDto.getUsername()))
             throw new MemberConflictException("동일 id 존재함");
-
+        String newPassword = passwordEncoder.encode(memberRegDto.getPassword());
+        memberRegDto.setPassword(newPassword);
         MemberEntity memberEntity = new MemberEntity();
         BeanUtils.copyProperties(memberRegDto, memberEntity);
         memberRepository.save(memberEntity);
