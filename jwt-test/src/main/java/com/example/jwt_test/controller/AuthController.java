@@ -33,13 +33,12 @@ public class AuthController {
 
         // 1. 인증 시도 (이미지 내 token 변수는 별도 정의 필요)
         Authentication authentication = authenticationManager.authenticate(token);
-        System.out.println("인증된 사용자 정보 : " + authentication.getPrincipal());
-
         // 2. 인증된 사용자 상세 정보 추출
-        UserDetails userDetails = (UserDetails)authentication.getPrincipal();
-        System.out.println("name : " + authentication.getName() );
-        System.out.println("name : " + userDetails.getUsername() );
-        System.out.println("auth : " + userDetails.getAuthorities() );
+        System.out.println("인증된 사용자 정보 : " + authentication.getPrincipal());
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        System.out.println("name : " + authentication.getName());
+        System.out.println("name : " + userDetails.getUsername());
+        System.out.println("auth : " + userDetails.getAuthorities());
 
         return ResponseEntity.ok("성공");
     }
