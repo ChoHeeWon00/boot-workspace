@@ -17,4 +17,14 @@ public class GlobalMemberException {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
     }
+
+    @ExceptionHandler(MemberConflictException.class)
+    public ResponseEntity<ProblemDetail> handlerConflictException(
+            MemberConflictException memberConflictException){
+
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problemDetail.setDetail( memberConflictException.getMessage() );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
+    }
 }
