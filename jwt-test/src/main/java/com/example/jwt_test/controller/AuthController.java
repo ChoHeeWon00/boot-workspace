@@ -1,5 +1,6 @@
 package com.example.jwt_test.controller;
 
+import com.example.jwt_test.config.JwtUtil;
 import com.example.jwt_test.dto.MemberRegDto;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -13,6 +14,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -21,7 +27,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(
+    public ResponseEntity<Map<String,Object>> login(
             @ParameterObject
             @ModelAttribute
             MemberRegDto memberRegDto) {
@@ -40,6 +46,12 @@ public class AuthController {
         System.out.println("name : " + userDetails.getUsername());
         System.out.println("auth : " + userDetails.getAuthorities());
 
-        return ResponseEntity.ok("성공");
+        String resultToken = JwtUtil.generateToken(userDetails.getUsername());
+//        System.out.println("resultToken : " + resultToken);
+
+//        이거 두줄이랑 아래 컬렉션 어쩌구랑 같은 코드.
+//        Map<String,Object> map = new HashMap<>();
+//        map.put("token",resultToken);
+        return ResponseEntity.ok(Collections.singletonMap("result",resultToken));
     }
 }
