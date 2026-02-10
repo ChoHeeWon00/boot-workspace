@@ -1,9 +1,12 @@
 package com.example.jwt_test.service;
 
 import com.example.jwt_test.dto.MemberDto;
+import com.example.jwt_test.dto.MemberRegDto;
+import com.example.jwt_test.entity.MemberEntity;
 import com.example.jwt_test.exception.MemberNotFoundException;
 import com.example.jwt_test.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,5 +27,14 @@ public class MemberService {
             throw new MemberNotFoundException("저장된 데이터 없음");
 
         return list;
+    }
+
+    public void register(MemberRegDto memberRegDto){
+        if(memberRepository.existsByUsername(memberRegDto.getUsername()))
+            throw new RuntimeException("동일 id 존재함");
+
+        MemberEntity memberEntity = new MemberEntity();
+        BeanUtils.copyProperties(memberRegDto, memberEntity);
+        memberRepository.save(memberEntity);
     }
 }
