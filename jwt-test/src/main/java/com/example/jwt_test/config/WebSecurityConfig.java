@@ -1,5 +1,6 @@
 package com.example.jwt_test.config;
 
+import com.example.jwt_test.exception.JwtAccessDeniedHandler;
 import com.example.jwt_test.exception.JwtAuthEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +17,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @Configuration
 public class WebSecurityConfig {
+    @Autowired
+    private JwtAccessDeniedHandler jwtAccessDeniedHandler;
     @Autowired
     private JwtAuthEntryPoint  jwtAuthEntryPoint;
     @Autowired
@@ -38,6 +41,7 @@ public class WebSecurityConfig {
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling( e -> e
                         .authenticationEntryPoint(jwtAuthEntryPoint) //인증되지 않은 사용자 접근
+                        .accessDeniedHandler(jwtAccessDeniedHandler)
                 );
 
         return http.build();
