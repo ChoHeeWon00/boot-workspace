@@ -9,10 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -29,9 +26,9 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String,Object>> login(
-            @ParameterObject
-            @ModelAttribute
-            MemberRegDto memberRegDto) {
+//            @ParameterObject
+//            @ModelAttribute
+            @RequestBody MemberRegDto memberRegDto) {
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                 memberRegDto.getUsername(),
