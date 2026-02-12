@@ -20,5 +20,11 @@ public class MemberEntity {
     @Column( nullable = false )
     private String role;
     private String fileName;
+
+    @PrePersist
+    public  void prePersist(){
+        if( this.role == null )
+            this.role = "USER";
+    }
 }
 

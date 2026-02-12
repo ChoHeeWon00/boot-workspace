@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
@@ -19,6 +20,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,7 +60,7 @@ public class MemberController {
                 .body(imageByte);
     }
 
-    @PostMapping("/login") //members/login
+    //@PostMapping("/login") //members/login
     @Operation(
             summary = "로그인",
             description = "username과 password 인증"
@@ -145,6 +147,7 @@ public class MemberController {
     }
 
     @GetMapping("/{id}") // /members/{id}
+    @SecurityRequirement(name="JWT")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "성공",
                     content = @Content(
@@ -170,6 +173,7 @@ public class MemberController {
         return ResponseEntity.ok(memberDto);
     }
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @SecurityRequirement(name="JWT")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "수정 성공",
                     content = @Content(
@@ -186,12 +190,14 @@ public class MemberController {
     public ResponseEntity<Void> update(
             @RequestParam(value="file", required = false) MultipartFile multipartFile,
             @ParameterObject @ModelAttribute MemberDto memberDto,
-                                        @PathVariable("id") int id ){
-        memberService.modify( id , memberDto, multipartFile );
+                                        @PathVariable("id") int id ,
+                                        Authentication authentication ){
+        memberService.modify( id , memberDto, multipartFile , authentication.getName() );
 
         return ResponseEntity.ok().build();
     }
     @DeleteMapping("{id}")
+    @SecurityRequirement(name="JWT")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "삭제 성공(내용 없음)",
                     content = @Content(
@@ -206,9 +212,10 @@ public class MemberController {
                     ))
     })
     public ResponseEntity<Void> deleteMember(@PathVariable("id") int id,
-                                             @RequestBody String fileName ){
+                                             @RequestBody String fileName,
+                                             Authentication authentication){
         //try {
-            memberService.delMember( id );
+            memberService.delMember( id, authentication.getName() );
             memberFileService.deleteFile( fileName );
        // } catch (MemberNotFoundException e) {
         //    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

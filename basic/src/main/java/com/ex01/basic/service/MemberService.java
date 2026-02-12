@@ -5,6 +5,7 @@ import com.ex01.basic.dto.MemberDto;
 import com.ex01.basic.dto.MemberRegDto;
 import com.ex01.basic.entity.MemberEntity;
 import com.ex01.basic.exception.InvalidLoginException;
+import com.ex01.basic.exception.MemberAccessDeniedException;
 import com.ex01.basic.exception.MemberDuplicateException;
 import com.ex01.basic.exception.MemberNotFoundException;
 import com.ex01.basic.repository.MemRepository;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,7 +33,8 @@ public class MemberService {
     private MemRepository memRepository;
     @Autowired
     private MemberFileService memberFileService;
-
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public MemberService(){
         System.out.println("MemberService 생성자");
@@ -65,40 +68,39 @@ public class MemberService {
          */
     }
 
-    public void modify(int id , MemberDto memberDto , MultipartFile multipartFile){
+    public void modify(int id , MemberDto memberDto , MultipartFile multipartFile, String username){
         MemberEntity memberEntity = memRepository.findById(id)
                 .orElseThrow( ()-> new MemberNotFoundException("수정 사용자 없음") );
+        if( !memberEntity.getUsername().equals( username ) )
+            throw new MemberAccessDeniedException("수정 권한이 없습니다");
+        if( !memberDto.getPassword().equals(memberEntity.getPassword()) )
+            memberDto.setPassword( passwordEncoder.encode( memberDto.getPassword()) );
         String changeFileName = memberFileService.saveFile(multipartFile);
         //changeFileName : 랜덤값-db.png
         if( !changeFileName.equals("nan") ){
             memberFileService.deleteFile( memberDto.getFileName() );
             memberDto.setFileName( changeFileName );
         }
-        //BeanUtils.copyProperties( memberDto, memberEntity , "username", "배제할 변수명" );
         BeanUtils.copyProperties( memberDto, memberEntity  );
         memRepository.save( memberEntity );
-        /*
-        boolean bool = memberRepository.existById( id );
-        if( !bool ) //bool ==false
-            throw new MemberNotFoundException("수정 사용자 없");
-        memberRepository.save( id, memberDto );
-         */
     }
-    public void delMember(int id ){
-        /*
-        boolean bool =  memberRepository.existById(id);
-        if( !bool )
-           throw new MemberNotFoundException("삭제 사용자 없음");
-         */
-        //boolean bool =  memberRepository.deleteById( id );
-        if( !memRepository.existsById(id) )
-            throw new MemberNotFoundException("삭제 사용자 없음");
+    public void delMember(int id , String username ){
+        //if( !memRepository.existsById(id) )
+        //    throw new MemberNotFoundException("삭제 사용자 없음");
+        MemberEntity memberEntity = memRepository.findById(id)
+                .orElseThrow( ()-> new MemberNotFoundException("삭제 사용자 없음") );
+
+        if( !memberEntity.getUsername().equals( username ) )
+            throw new MemberAccessDeniedException("삭제 권한이 없습니다");
+
         memRepository.deleteById( id );
     }
     public void insert(MemberRegDto memberRegDto, MultipartFile multipartFile){
         boolean bool = memRepository.existsByUsername( memberRegDto.getUsername() );
         if( bool )
             throw new MemberDuplicateException("중복 id");
+
+        memberRegDto.setPassword( passwordEncoder.encode( memberRegDto.getPassword()) );
 
         String fileName = memberFileService.saveFile( multipartFile );
         memberRegDto.setFileName( fileName );
