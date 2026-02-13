@@ -99,8 +99,14 @@ public class MemberService {
     }
     //@Transactional
     public void delete(long id ){
-        if( !memberRepository.existsById(id) )
-            throw new MemberNotFoundException("삭제할 사용자가 없습니다");
+        //if( !memberRepository.existsById(id) )
+        //    throw new MemberNotFoundException("삭제할 사용자가 없습니다");
+        MemberEntity memberEntity = memberRepository.findById(id)
+                        .orElseThrow(
+                                ()->new MemberNotFoundException("삭제할 사용자가 없습니다")
+                        );
+        //memberEntity.getPosts().forEach( post -> post.setMemberEntity(null) );
+        memberEntity.getPosts().clear();
         memberRepository.deleteById( id );
     }
     //@Transactional

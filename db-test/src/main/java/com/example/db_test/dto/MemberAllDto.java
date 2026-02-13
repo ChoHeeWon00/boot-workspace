@@ -17,5 +17,6 @@ public class MemberAllDto {
         //this.number = memberEntity.getNumber();
         //this.userId = memberEntity.getUserId();
         BeanUtils.copyProperties(memberEntity, this);
+
     }
 }

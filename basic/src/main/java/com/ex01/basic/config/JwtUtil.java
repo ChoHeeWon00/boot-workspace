@@ -12,12 +12,12 @@ import java.util.Date;
 public class JwtUtil {
     @Value("${jwt.secretKey}")
     private String secretKey; // = "test1234";
-    private final long expirationMs = 2000 * 60; //1분 동안 유효
+    private final long expirationMs = 100 * 60; //1분 동안 유효
     public String generateToken(String username, String role){
         //System.out.println("jwt secretKey : " + secretKey );
-        Claims claims = Jwts.claims();
-        claims.put("username", username);
-        claims.put("role",role);
+    Claims claims = Jwts.claims();
+    claims.put("username", username);
+    claims.put("role",role);
         return Jwts.builder()
                 //.setSubject(username)
                 //.claim("username", username)

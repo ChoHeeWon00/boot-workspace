@@ -1,4 +1,4 @@
-package com.example.db_test.exception;
+package com.example.db_test.exception.post;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
-public class GlobalExceptionHandler { // globalExceptionHandler
+@RestControllerAdvice//(name="PostGlobalExceptionHandler")
+public class GlobalPostExceptionHandler {
     @ExceptionHandler(MemberNotFoundException.class)
     public ResponseEntity<ProblemDetail> notFoundHandler(
                 MemberNotFoundException memberNotFoundException ){
@@ -17,17 +17,6 @@ public class GlobalExceptionHandler { // globalExceptionHandler
         problemDetail.setDetail( memberNotFoundException.getMessage() );
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body( problemDetail );
-    }
-    @ExceptionHandler(MemberDuplicateException.class)
-    public ResponseEntity<ProblemDetail> duplicateHandler(
-                MemberDuplicateException memberDuplicateException ){
-
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
-        problemDetail.setTitle("중복 사용자");
-        problemDetail.setDetail( memberDuplicateException.getMessage() );
-
-        return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body( problemDetail );
     }
 }
