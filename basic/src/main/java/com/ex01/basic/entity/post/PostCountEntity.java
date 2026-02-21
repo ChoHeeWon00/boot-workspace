@@ -17,5 +17,18 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class PostCountEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "member_id",
+            nullable = true,
+            foreignKey = @ForeignKey(
+                    foreignKeyDefinition = "FOREIGN KEY(member_id) REFERENCES member_test(number) ON DELETE SET NULL"
+            )
+    )
+    private MemberEntity memberEntity;
 
 }
