@@ -59,6 +59,9 @@ public class PostService {
                 );
         increaseView(postId, memberId);
 
+        Long postCount = postCountRepository.countByPostEntity_Id(postId);
+        postDetailDto.setPostCount(postCount);
+
         return postDetailDto;
     }
 

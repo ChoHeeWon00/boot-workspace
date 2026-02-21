@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PostCountRepository extends JpaRepository<PostCountEntity, Long> {
     boolean existsByPostEntity_IdAndMemberEntity_Id(Long postId, Integer memberId);
+    long countByPostEntity_Id(Long postId);
 }
 
 

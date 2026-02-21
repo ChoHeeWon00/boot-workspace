@@ -19,6 +19,8 @@ public class PostDetailDto {
     private LocalDateTime updatedAt;
     private int memberUserId;
     private String memberUserName;
+    private Long postCount;
+
     public PostDetailDto(PostEntity postEntity){
         BeanUtils.copyProperties(postEntity, this );
 
