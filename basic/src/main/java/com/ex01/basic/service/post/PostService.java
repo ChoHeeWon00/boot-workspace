@@ -48,11 +48,19 @@ public class PostService {
                 .toList();
     }
 
-    public PostDetailDto getPostOne(Long id){
-        return postRepository.findById(id)
-                .map( PostDetailDto::new)
+    public PostDetailDto getPostOne(Long postId, Long memberId) {
+        PostDetailDto postDetailDto = postRepository.findById(postId)
+                .map(PostDetailDto::new)
                 .orElseThrow(
                         () -> new PostNotFoundException("존재하지 않는 글")
                 );
+        increaseView(postId, memberId);
+
+        return postDetailDto;
     }
+
+    private void increaseView(Long id, Long number) {
+
+    }
+
 }
