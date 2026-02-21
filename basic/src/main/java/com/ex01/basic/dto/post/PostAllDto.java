@@ -1,5 +1,6 @@
 package com.ex01.basic.dto.post;
 
+import com.ex01.basic.entity.MemberEntity;
 import com.ex01.basic.entity.post.PostEntity;
 import lombok.*;
 import org.springframework.beans.BeanUtils;
@@ -18,8 +19,10 @@ public class PostAllDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private MemberEntity memberEntity;
+
     public PostAllDto(PostEntity postEntity){
         System.out.println(postEntity);
-        BeanUtils.copyProperties(postEntity, this );
+        BeanUtils.copyProperties(postEntity, this, "memberEntity");
     }
 }
