@@ -25,7 +25,7 @@ public class MemberEntity {
     private String role;
     private String fileName;
 
-    @OneToMany(mappedBy = "memberEntity", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "memberEntity", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<PostEntity> posts = new ArrayList<>();
 }
 

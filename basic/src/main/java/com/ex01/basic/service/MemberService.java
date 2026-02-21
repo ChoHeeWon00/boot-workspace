@@ -92,7 +92,8 @@ public class MemberService {
         MemberEntity memberEntity = memRepository.findById(id).orElseThrow(
                 () -> new MemberNotFoundException("삭제 사용자 없음")
         );
-        memberEntity.getPosts().forEach(post -> post.setMemberEntity(null));
+//        memberEntity.getPosts().forEach(post -> post.setMemberEntity(null));
+        memberEntity.getPosts().clear();
         memRepository.deleteById(id);
     }
 
