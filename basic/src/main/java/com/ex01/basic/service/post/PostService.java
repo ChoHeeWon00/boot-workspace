@@ -1,6 +1,7 @@
 package com.ex01.basic.service.post;
 
 import com.ex01.basic.dto.post.PostAllDto;
+import com.ex01.basic.dto.post.PostDetailDto;
 import com.ex01.basic.dto.post.PostDto;
 import com.ex01.basic.entity.MemberEntity;
 import com.ex01.basic.entity.post.PostEntity;
@@ -45,5 +46,13 @@ public class PostService {
         return posts.stream()
                 .map(PostAllDto::new)
                 .toList();
+    }
+
+    public PostDetailDto getPostOne(Long id){
+        return postRepository.findById(id)
+                .map( PostDetailDto::new)
+                .orElseThrow(
+                        () -> new PostNotFoundException("존재하지 않는 글")
+                );
     }
 }

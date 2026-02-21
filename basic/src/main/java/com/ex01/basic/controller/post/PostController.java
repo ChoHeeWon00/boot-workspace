@@ -1,6 +1,7 @@
 package com.ex01.basic.controller.post;
 
 import com.ex01.basic.dto.post.PostAllDto;
+import com.ex01.basic.dto.post.PostDetailDto;
 import com.ex01.basic.dto.post.PostDto;
 import com.ex01.basic.service.post.PostService;
 import lombok.RequiredArgsConstructor;
@@ -28,5 +29,10 @@ public class PostController {
         return ResponseEntity.ok(postService.getPost());
     }
 
+    @GetMapping("{id}")
+    public ResponseEntity<PostDetailDto> getPostOne(
+            @PathVariable("id") Long id) {
+        return ResponseEntity.ok(postService.getPostOne(id));
+    }
 
 }
