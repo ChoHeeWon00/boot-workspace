@@ -1,7 +1,11 @@
 package com.ex01.basic.entity;
 
+import com.ex01.basic.entity.post.PostEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="member_test")
@@ -20,6 +24,10 @@ public class MemberEntity {
     @Column( nullable = false )
     private String role;
     private String fileName;
+
+    @OneToMany( mappedBy = "memberEntity", orphanRemoval = true,
+                            cascade = CascadeType.ALL, fetch = FetchType.LAZY )
+    private List<PostEntity> posts = new ArrayList<>();
 
     @PrePersist
     public  void prePersist(){
