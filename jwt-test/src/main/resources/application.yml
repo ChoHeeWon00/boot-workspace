@@ -14,7 +14,7 @@ spring:
 
 # 서버 설정
 server:
-  port: 10000
+  port: 3000
 
 # 사용자 정의 설정 (JWT 등)
 jwt:
