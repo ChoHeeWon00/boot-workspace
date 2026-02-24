@@ -1,2 +1,23 @@
+server:
+  port: 3000  # 여기서 포트 번호를 관리하면 됩니다.
+
+spring:
+  application:
+    name: jwt-test
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/jpa
+    username: root
+    password: digh1212
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+# 사용자 정의 설정 (JWT 등)
 jwt:
-  secretKey : test1234
+  secretKey: test1234
