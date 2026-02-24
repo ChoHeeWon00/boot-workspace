@@ -4,6 +4,10 @@ import com.ex01.basic.config.JwtUtil;
 import com.ex01.basic.dto.LoginDto;
 import com.ex01.basic.dto.MemberDto;
 import com.ex01.basic.dto.MemberRegDto;
+import com.ex01.basic.entity.MemberEntity;
+import com.ex01.basic.exception.MemberConflictException;
+import com.ex01.basic.repository.MemRepository;
+import com.ex01.basic.repository.MemberRepository;
 import com.ex01.basic.service.MemberFileService;
 import com.ex01.basic.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,15 +20,21 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
 import java.util.Map;
 
 @Tag(name="MemberAPI" , description = "회원 도메인 API")
@@ -37,6 +47,8 @@ public class MemberController {
     private MemberFileService memberFileService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
+    private final MemRepository memRepository;
 
     @GetMapping("{fileName}/image")
     @Operation(
@@ -77,14 +89,28 @@ public class MemberController {
                             schema = @Schema(implementation = Integer.class, example = "1")
                     ))
     })
-    public ResponseEntity<Integer> login(@RequestBody LoginDto loginDto){
+    public ResponseEntity<Map<String,Object>> login(@RequestBody LoginDto loginDto){
         //System.out.println("loginDto => " + loginDto );
         //try{
-            memberService.login( loginDto );
+//            memberService.login( loginDto );
         //} catch (InvalidLoginException e) {
         //    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(1);
         //}
-        return ResponseEntity.ok(0);
+//        return ResponseEntity.ok(0);
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                loginDto.getUsername(),
+                loginDto.getPassword()
+        );
+
+        // 1. 인증 시도 (이미지 내 token 변수는 별도 정의 필요)
+        Authentication authentication = authenticationManager.authenticate(token);
+        // 2. 인증된 사용자 상세 정보 추출
+        System.out.println("인증된 사용자 정보 : " + authentication.getPrincipal());
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        String resultToken = jwtUtil.generateToken(userDetails.getUsername());
+
+        return ResponseEntity.ok(Collections.singletonMap("result",resultToken));
     }
 
     @GetMapping("test")
@@ -236,7 +262,17 @@ public class MemberController {
                             @ParameterObject
                             @ModelAttribute MemberRegDto memberRegDto){
         //System.out.println("multipartFile : " + multipartFile );
-        memberService.insert( memberRegDto , multipartFile);
+//        memberService.insert( memberRegDto , multipartFile);
+//        return ResponseEntity.status(HttpStatus.CREATED).body("회원 가입 성공");
+
+        if (memRepository.existsByUsername(memberRegDto.getUsername()))
+            throw new MemberConflictException("동일 id 존재함");
+        String newPassword = passwordEncoder.encode(memberRegDto.getPassword());
+        memberRegDto.setPassword(newPassword);
+        MemberEntity memberEntity = new MemberEntity();
+        BeanUtils.copyProperties(memberRegDto, memberEntity);
+        memRepository.save(memberEntity);
+
         return ResponseEntity.status(HttpStatus.CREATED).body("회원 가입 성공");
     }
 }
