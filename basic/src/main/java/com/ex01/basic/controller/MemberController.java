@@ -43,8 +43,8 @@ import java.util.Map;
 @RequestMapping("/members")
 @Slf4j
 public class MemberController {
-    private MemberService memberService;
-    private MemberFileService memberFileService;
+    private final MemberService memberService;
+    private final MemberFileService memberFileService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
