@@ -1,5 +1,6 @@
 package com.ex01.basic.controller.post;
 
+import com.ex01.basic.config.security.CustomUserDetails;
 import com.ex01.basic.dto.post.PostAllDto;
 import com.ex01.basic.dto.post.PostDetailDto;
 import com.ex01.basic.dto.post.PostDto;
@@ -8,6 +9,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,11 +33,14 @@ public class PostController {
     }
 
     @GetMapping("{id}")
-    @SecurityRequirement(name="JWT")
+    @SecurityRequirement(name = "JWT")
     public ResponseEntity<PostDetailDto> getPostOne(
             @RequestParam("postId") Long postId,
-            @RequestParam("memberId") Integer memberId){
-        return ResponseEntity.ok(postService.getPostOne(postId, memberId));
+            Authentication authentication) {
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        return ResponseEntity.ok(postService.getPostOne(postId, userDetails.getId()));
     }
 
 }
